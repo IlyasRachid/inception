@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inception"
+version = "0.1.0"
+description = "ML library built from scratch using NumPy"
+authors = [{name = "Ilvan", email = "ilyas.rachid2002@gmail.com"}]
+readme = "README.md"
+license = "MIT"
+dependencies = ["numpy"]
+requires-python = ">=3.8"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=src/inception --cov-report=term-missing"
+testpaths = ["tests"]
