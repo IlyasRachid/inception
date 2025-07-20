@@ -9,8 +9,17 @@ description = "ML library built from scratch using NumPy"
 authors = [{name = "Ilvan", email = "ilyas.rachid2002@gmail.com"}]
 readme = "README.md"
 license = { file = "LICENSE" }
-dependencies = ["numpy"]
+dependencies = ["numpy>=1.21.0", "scipy>=1.7.0"]
 requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=3.0",
+    "black>=22.0",
+    "flake8>=4.0",
+    "mypy>=0.910"
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -19,5 +28,5 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=src/inception --cov-report=term-missing"
+addopts = "--cov=src/inception --cov-report=term-missing --cov-report=html"
 testpaths = ["tests"]

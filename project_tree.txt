@@ -1,6 +1,7 @@
 inception
 ├─ LICENSE
 ├─ README.md
+├─ gitup.sh
 ├─ pyproject.toml
 ├─ pytest.ini
 ├─ requirements.txt
