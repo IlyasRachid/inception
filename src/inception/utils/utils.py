@@ -1,12 +1,13 @@
 import os
 
-def generate_pretty_tree(output_filename="project_tree.txt"):
+def generate_pretty_tree(output_filename="project_tree.txt", skip_names=None):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 
     def _tree(dir_path, prefix=""):
         entries = sorted(os.listdir(dir_path))
         entries = [e for e in entries if not e.startswith('.')]  # optional: skip hidden files
+        entries = [e for e in entries if e not in skip_names]    # skip specified folders/files
 
         tree_lines = []
         total = len(entries)
@@ -35,4 +36,5 @@ def generate_pretty_tree(output_filename="project_tree.txt"):
 
 
 if __name__ == "__main__":
-    generate_pretty_tree()
+    skip = ["venv", "__pycache__", ".git", ".idea", "node_modules", "htmlcov", "project_tree.txt"]
+    generate_pretty_tree(skip_names=skip)
