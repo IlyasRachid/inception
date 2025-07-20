@@ -1,6 +1,8 @@
 import os
 
 def generate_pretty_tree(output_filename="project_tree.txt", skip_names=None):
+    if skip_names is None:
+        skip_names = []
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 
