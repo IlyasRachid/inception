@@ -6,27 +6,22 @@ inception
 ├─ pytest.ini
 ├─ requirements.txt
 ├─ src
-│  ├─ inception
-│  │  ├─ __init__.py
-│  │  ├─ base
-│  │  │  └─ __init__.py
-│  │  ├─ losses
-│  │  │  └─ __init__.py
-│  │  ├─ metrics
-│  │  │  └─ __init__.py
-│  │  ├─ models
-│  │  │  └─ __init__.py
-│  │  ├─ optimizers
-│  │  │  └─ __init__.py
-│  │  └─ utils
-│  │     ├─ __init__.py
-│  │     └─ utils.py
-│  └─ inception.egg-info
-│     ├─ PKG-INFO
-│     ├─ SOURCES.txt
-│     ├─ dependency_links.txt
-│     ├─ requires.txt
-│     └─ top_level.txt
+│  └─ inception
+│     ├─ __init__.py
+│     ├─ base
+│     │  └─ __init__.py
+│     ├─ losses
+│     │  └─ __init__.py
+│     ├─ metrics
+│     │  └─ __init__.py
+│     ├─ models
+│     │  └─ __init__.py
+│     ├─ optimizers
+│     │  ├─ __init__.py
+│     │  └─ gradient_descent.py
+│     └─ utils
+│        ├─ __init__.py
+│        └─ utils.py
 └─ tests
    ├─ __init__.py
    ├─ models
