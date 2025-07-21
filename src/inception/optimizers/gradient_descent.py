@@ -21,7 +21,7 @@ class GradientDescent(BaseOptimizer):
         Parameters:
         - func: callable, the function to minimize
         - grad: callable, the gradient of the function
-        - x0: np.ndarray, initial point for optimization
+        - x0: np.ndarray, initial points for optimization (full dataset)
         """
         x = np.array(x0, dtype=float)
         self.history_ = [(x.copy(), func(x))]
