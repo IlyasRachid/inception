@@ -1,5 +1,6 @@
 from inception.optimizers import GradientDescent
 from inception.optimizers import StochasticGradientDescent
+from inception.optimizers import MiniBatchGradientDescent
 import numpy as np # type: ignore
 
 def test_gradient_descent():
@@ -14,7 +15,7 @@ def test_gradient_descent():
     assert np.allclose(result, np.array([0.0, 0.0]), atol=1e-2)
 
 
-def test_sgd_optimizer_converges():
+def test_stochastic_gradient_descent():
     # Create a toy dataset for y = 2x
     X = [np.array([x]) for x in range(-10, 11)] # shape: (21, 1)
     y = [2 * x for x in range(-10, 11)] # shape: (21,)
@@ -38,3 +39,37 @@ def test_sgd_optimizer_converges():
 
     # The optimal parameter should be close to 2
     assert np.allclose(theta_opt, [2.0], atol=1e-3), f"SGD did not converge properly: {theta_opt}"
+
+
+def test_mini_batch_gradient_descent():
+    rng = np.random.default_rng(42)
+    X = np.array([[x] for x in range(-5,5)])  # shape: (100, 1)
+    true_theta = np.array([3.0])
+    y = X@true_theta + rng.normal(0, 0.1, size=X.shape[0])
+
+    # Define loss function: MSE for one sample
+    def loss_fn(theta, x_i, y_i):
+        return (theta @ x_i - y_i) ** 2
+
+    # Define gradient of the loss
+    def grad_fn(theta, x_i, y_i):
+        return 2 * (theta @ x_i - y_i) * x_i
+    
+    # Initial guess
+    x0 = np.array([0.0])
+
+    # Train with MBGD
+    mbgd = MiniBatchGradientDescent(
+        learning_rate=0.01,
+        max_iter=100,
+        batch_size=5,
+        tolerance=1e-6,
+        verbose=False,
+        random_state=42
+    )
+
+    mbgd.fit(loss_fn, grad_fn, x0, list(zip(X, y)))
+    theta_opt = mbgd.predict()
+
+    # check if the optimal parameter is close to the true value
+    assert np.allclose(theta_opt, true_theta, atol=5e-2), f"MBGD did not converge properly: {theta_opt}"
