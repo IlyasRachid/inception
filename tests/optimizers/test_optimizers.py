@@ -1,6 +1,7 @@
 from inception.optimizers import GradientDescent
 from inception.optimizers import StochasticGradientDescent
 from inception.optimizers import MiniBatchGradientDescent
+from inception.optimizers import Momentum
 import numpy as np # type: ignore
 
 def test_gradient_descent():
@@ -73,3 +74,36 @@ def test_mini_batch_gradient_descent():
 
     # check if the optimal parameter is close to the true value
     assert np.allclose(theta_opt, true_theta, atol=5e-2), f"MBGD did not converge properly: {theta_opt}"
+
+def test_momentum():
+    # Generate toy data: y = 3x + noise
+    rng = np.random.default_rng(42)
+    X = np.array([[x] for x in np.linspace(-10, 10, 500)])
+    true_theta = np.array([3.0]) 
+    y = X @ true_theta +  rng.normal(0, 0.5, size=X.shape[0])
+    data = list(zip(X, y))
+
+    # Define loss function (MSE)
+    def loss_fn(theta, x_i, y_i):
+        return (theta @ x_i - y_i)**2
+    
+    # Define gradient of the loss
+    def grad_fn(theta, x_i, y_i):
+        return 2 * (theta @ x_i - y_i) * x_i
+    
+    # Initial parameter guess
+    x0 = np.array([0.0])
+
+    # Run momentum optimizer
+    opt = Momentum(
+        learning_rate=0.01,
+        momentum=0.9,
+        max_iter=300,
+        tolerance=1e-6,
+        verbose=True
+    )
+    opt.fit(loss_fn, grad_fn, x0, data)
+    theta_opt = opt.predict()
+
+    # Check if the optimal parameter is close to the true value
+    assert np.allclose(theta_opt, true_theta, atol=1e-2), f"Momentum did not converge properly: {theta_opt}"
