@@ -33,7 +33,7 @@ class SurfacePlotter3D:
         ))
         return fig
     
-    def add_path(self, fig, trajectory: List[np.ndarray]):
+    def add_path(self, fig, trajectory: List[np.ndarray], name: Optional[str] = "Path", color: str = "red"):
         path_x, path_y, path_z = [], [], []
         for point, eval in trajectory:
             x, y = point
@@ -66,6 +66,23 @@ class SurfacePlotter3D:
                 line=dict(color=color, width=3),
                 name="Vector"
             ))
+        return fig
+    
+    def add_2d_projection(self, fig, trajectory: List[np.ndarray], color="cyan", scale=0.05, name="2D Projection"):
+        path_x, path_y = [], []
+        for point, _ in trajectory:
+            x, y = point
+            path_x.append(x)
+            path_y.append(y)
+        fig.add_trace(go.Scatter3d(
+            x=path_x,
+            y=path_y,
+            z=[self.Z.min() - 0.2] * len(path_x),  # Offset below the surface
+            mode='lines+markers',
+            line=dict(color=color, dash='dash', width=2),
+            marker=dict(size=3, color=color),
+            name='2D Projection'
+        ))
         return fig
     
 

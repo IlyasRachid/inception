@@ -3,6 +3,7 @@ from inception.optimizers import StochasticGradientDescent
 from inception.optimizers import MiniBatchGradientDescent
 from inception.optimizers import Momentum
 from inception.utils import SurfacePlotter3D
+from inception.optimizers import Nesterov
 import numpy as np # type: ignore
 
 def test_gradient_descent():
@@ -61,9 +62,6 @@ def test_stochastic_gradient_descent():
 
     def full_loss(theta):
         return np.mean([loss(theta, x, y) for x, y in data])
-    
-    def full_grad(theta):
-        return np.mean([grad(theta, x, y) for x, y in data], axis=0)
     
     history = sgd.get_history()
     trajectory = [(point, eval) for (point, eval, _) in history]
@@ -160,7 +158,56 @@ def test_momentum():
     fig = plotter.add_path(fig, trajectory)
     fig = plotter.add_vectors(fig, vectors, color='blue')
     fig = plotter.add_vectors(fig, momentum, color='green', scale=0.5)
+    fig = plotter.add_2d_projection(fig, trajectory)
     fig.show()
 
+def test_nesterov():
+    # Generate toy data: y = 2x1 + 3x2 + noise
+    rng = np.random.default_rng(42)
+    X = rng.normal(0, 1, size=(100, 2))
+    true_theta = np.array([2.0, 3.0])
+    y = X @ true_theta + rng.normal(0, 0.2, size=X.shape[0])
+    data = [(X, y)]
 
+    # Mean Squared Error Loss
+    def loss_fn(theta, X, y):
+        return np.mean((X @ theta - y)**2)
 
+    # Gradient of the loss
+    def grad_fn(theta, X, y):
+        return 2 * (X @ theta - y) @ X / X.shape[0]
+
+    # Initial guess
+    x0 = np.array([0.0, 0.0])
+
+    # Instantiate and fit with Nesterov
+    opt = Nesterov(
+        learning_rate=0.01,
+        momentum=0.9,
+        max_iter=500,
+        tolerance=1e-6,
+        verbose=True
+    )
+    opt.fit(loss_fn, grad_fn, x0, data)
+    theta_opt = opt.predict()
+
+    # Validate convergence
+    assert np.allclose(theta_opt, true_theta, atol=1e-1), f"Nesterov did not converge properly: {theta_opt}"
+
+    # Prepare history for visualization
+    history = opt.get_history()
+    trajectory = [(point, eval) for (point, eval, _, _) in history]
+    vectors = [(theta, -grad) for (theta, _, grad, _) in history]
+    momentum = [(point, v) for (point, _, _, v) in history]
+
+    # Visualization
+    def scalar_f(x, y0):
+        return loss_fn(np.array([x, y0]), X, y)
+
+    plotter = SurfacePlotter3D(scalar_f, x_range=(-12, 12), y_range=(-12, 12), resolution=100)
+    fig = plotter.plot_surface(title="Nesterov Path")
+    fig = plotter.add_path(fig, trajectory, name="Nesterov Path", color="blue")
+    fig = plotter.add_vectors(fig, vectors, color='purple')
+    fig = plotter.add_vectors(fig, momentum, color='orange', scale=0.5)
+    fig = plotter.add_2d_projection(fig, trajectory, name="Nesterov 2D", color='cyan')
+    fig.show()
