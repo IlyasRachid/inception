@@ -24,7 +24,7 @@ class GradientDescent(BaseOptimizer):
         - x0: np.ndarray, initial points for optimization (full dataset)
         """
         x = np.array(x0, dtype=float)
-        self.history_ = [(x.copy(), func(x))]
+        self.history_ = [(x.copy(), func(x), grad(x))]
 
         for i in range(self.max_iter):
             g = grad(x)
@@ -33,7 +33,7 @@ class GradientDescent(BaseOptimizer):
                     print(f"[Converged] Step {i}, ||grad|| = {np.linalg.norm(g):.2e}")
                 break
             x -= self.learning_rate * g
-            self.history_.append((x.copy(), func(x)))
+            self.history_.append((x.copy(), func(x), grad(x)))
 
             if self.verbose and i % 50 == 0:
                 print(f"[Step {i}] f(x) = {func(x):.6f}, x = {x}")

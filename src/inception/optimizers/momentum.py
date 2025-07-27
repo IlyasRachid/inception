@@ -42,7 +42,7 @@ class Momentum(BaseOptimizer):
             v = self.momentum * v - self.learning_rate * grad_avg
             theta += v
 
-            self.history_.append((theta.copy(), loss_avg))
+            self.history_.append((theta.copy(), loss_avg, grad_avg.copy(), v.copy()))
 
             if self.verbose and i % 50 == 0:
                 print(f"Iteration {i}: Loss = {loss_avg:.4f}, theta = {theta}")
