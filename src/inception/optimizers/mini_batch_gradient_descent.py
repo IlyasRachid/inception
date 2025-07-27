@@ -58,7 +58,7 @@ class MiniBatchGradientDescent(BaseOptimizer):
                 
                 # Update the parameters
                 theta -= self.learning_rate * grad_avg
-                self.history_.append((theta.copy(), loss_avg))
+                self.history_.append((theta.copy(), loss_avg, grad_avg))
 
                 if self.verbose and i % (self.batch_size * 2) == 0:
                     print(f"Epoch {epoch}, Batch {i // self.batch_size}, Loss: {loss_avg:.4f}, theta: {theta}")

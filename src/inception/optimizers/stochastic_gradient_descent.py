@@ -54,7 +54,7 @@ class StochasticGradientDescent(BaseOptimizer):
 
                 theta -= self.learning_rate * g
                 loss_value = func(theta, x_i, y_i)
-                self.history_.append((theta.copy(), loss_value))
+                self.history_.append((theta.copy(), loss_value, g))
                 step_counts += 1
 
                 if self.verbose and (epoch * n + i) % 20 == 0:
