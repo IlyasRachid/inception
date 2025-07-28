@@ -18,9 +18,15 @@ inception
 │     │  └─ __init__.py
 │     ├─ optimizers
 │     │  ├─ __init__.py
-│     │  └─ gradient_descent.py
+│     │  ├─ gradient_descent.py
+│     │  ├─ mini_batch_gradient_descent.py
+│     │  ├─ momentum.py
+│     │  ├─ nesterov.py
+│     │  ├─ rmsprop.py
+│     │  └─ stochastic_gradient_descent.py
 │     └─ utils
 │        ├─ __init__.py
+│        ├─ plotting.py
 │        └─ utils.py
 └─ tests
    ├─ __init__.py

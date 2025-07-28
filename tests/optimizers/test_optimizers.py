@@ -4,6 +4,7 @@ from inception.optimizers import MiniBatchGradientDescent
 from inception.optimizers import Momentum
 from inception.utils import SurfacePlotter3D
 from inception.optimizers import Nesterov
+from inception.optimizers import RMSProp
 import numpy as np # type: ignore
 
 def test_gradient_descent():
@@ -210,4 +211,50 @@ def test_nesterov():
     fig = plotter.add_vectors(fig, vectors, color='purple')
     fig = plotter.add_vectors(fig, momentum, color='orange', scale=0.5)
     fig = plotter.add_2d_projection(fig, trajectory, name="Nesterov 2D", color='cyan')
+    fig.show()
+
+def test_rmsprop():
+    # Generate toy data
+    rng = np.random.default_rng(42)
+    X = rng.normal(0, 1, size=(100, 2))
+    true_theta = np.array([2.0, 3.0])
+    y = X @ true_theta + rng.normal(0, 0.2, size=X.shape[0])
+    data = [(X, y)]
+
+    # Loss and gradient functions
+    def loss_fn(theta, X, y):
+        return np.mean((X @ theta - y) ** 2)
+
+    def grad_fn(theta, X, y):
+        return 2 * (X @ theta - y) @ X / X.shape[0]
+
+    x0 = np.array([0.0, 0.0])
+
+    opt = RMSProp(
+        learning_rate=0.01,
+        beta=0.9,
+        epsilon=1e-8,
+        max_iter=500,
+        tolerance=1e-6,
+        verbose=True
+    )
+    opt.fit(loss_fn, grad_fn, x0, data)
+    theta_opt = opt.predict()
+
+    assert np.allclose(theta_opt, true_theta, atol=1e-1), f"RMSProp did not converge properly: {theta_opt}"
+
+    history = opt.get_history()
+    trajectory = [(theta, loss) for (theta, loss, _, _) in history]
+    grad_vectors = [(theta, -grad) for (theta, _, grad, _) in history]
+    updates = [(theta, update) for (theta, _, _, update) in history]
+
+    def scalar_f(x, y0):
+        return loss_fn(np.array([x, y0]), X, y)
+
+    plotter = SurfacePlotter3D(scalar_f, x_range=(-12, 12), y_range=(-12, 12), resolution=100)
+    fig = plotter.plot_surface(title="RMSProp Path")
+    fig = plotter.add_path(fig, trajectory)
+    fig = plotter.add_vectors(fig, grad_vectors, color='blue')
+    fig = plotter.add_vectors(fig, updates, color='orange', scale=0.5)
+    fig = plotter.add_2d_projection(fig, trajectory)
     fig.show()
